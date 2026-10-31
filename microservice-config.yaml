@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   name: emailservice
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: emailservice
@@ -13,20 +14,26 @@ spec:
     spec:
       containers:
       - name: service
-        image: gcr.io/google-samples/microservices-demo/emailservice:v0.10.7
+        image: us-central1-docker.pkg.dev/google-samples/microservices-demo/emailservice:v0.10.5
         ports:
         - containerPort: 8080
         env:
         - name: PORT
           value: "8080"
+        - name: DISABLE_PROFILER
+          value: "1"
         livenessProbe:
           grpc:
             port: 8080
-          periodSeconds: 5
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 3
         readinessProbe:
           grpc:
             port: 8080
-          periodSeconds: 5
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 3
         resources:
           requests:
             cpu: 100m
@@ -66,7 +73,7 @@ spec:
     spec:
       containers:
       - name: service
-        image: gcr.io/google-samples/microservices-demo/recommendationservice:v0.10.7
+        image: us-central1-docker.pkg.dev/google-samples/microservices-demo/recommendationservice:v0.10.5
         ports:
         - containerPort: 8080
         env:
@@ -79,12 +86,22 @@ spec:
         livenessProbe:
           grpc:
             port: 8080
-          periodSeconds: 5
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 3
         readinessProbe:
           grpc:
             port: 8080
-          periodSeconds: 5
-
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 3
+        resources:
+          requests:
+            cpu: 100m
+            memory: 220Mi
+          limits:
+            cpu: 200m
+            memory: 450Mi
 
 ---
 apiVersion: v1
@@ -117,7 +134,7 @@ spec:
     spec:
       containers:
       - name: service
-        image: gcr.io/google-samples/microservices-demo/productcatalogservice:v0.10.7
+        image: us-central1-docker.pkg.dev/google-samples/microservices-demo/productcatalogservice:v0.10.5
         ports:
         - containerPort: 3550
         env:
@@ -127,10 +144,12 @@ spec:
           grpc:
             port: 3550
           periodSeconds: 5
+          timeoutSeconds: 3
         readinessProbe:
           grpc:
             port: 3550
           periodSeconds: 5
+          timeoutSeconds: 3
 
 ---
 apiVersion: v1
@@ -163,7 +182,7 @@ spec:
     spec:
       containers:
       - name: service
-        image: gcr.io/google-samples/microservices-demo/paymentservice:v0.10.7
+        image: us-central1-docker.pkg.dev/google-samples/microservices-demo/paymentservice:v0.10.5
         ports:
         - containerPort: 50051
         env:
@@ -174,11 +193,15 @@ spec:
         livenessProbe:
           grpc:
             port: 50051
-          periodSeconds: 5
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 3
         readinessProbe:
           grpc:
             port: 50051
-          periodSeconds: 5
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 3
 
 ---
 apiVersion: v1
@@ -211,7 +234,7 @@ spec:
     spec:
       containers:
       - name: service
-        image: gcr.io/google-samples/microservices-demo/currencyservice:v0.10.7
+        image: us-central1-docker.pkg.dev/google-samples/microservices-demo/currencyservice:v0.10.5
         ports:
         - containerPort: 7000
         env:
@@ -222,12 +245,15 @@ spec:
         livenessProbe:
           grpc:
             port: 7000
-          periodSeconds: 5
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 3
         readinessProbe:
           grpc:
             port: 7000
-          periodSeconds: 5
-
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 3
 
 ---
 apiVersion: v1
@@ -260,7 +286,7 @@ spec:
     spec:
       containers:
       - name: service
-        image: gcr.io/google-samples/microservices-demo/shippingservice:v0.10.7
+        image: us-central1-docker.pkg.dev/google-samples/microservices-demo/shippingservice:v0.10.5
         ports:
         - containerPort: 50051
         env:
@@ -270,10 +296,12 @@ spec:
           grpc:
             port: 50051
           periodSeconds: 5
+          timeoutSeconds: 3
         readinessProbe:
           grpc:
             port: 50051
           periodSeconds: 5
+          timeoutSeconds: 3
 
 ---
 apiVersion: v1
@@ -306,27 +334,36 @@ spec:
     spec:
       containers:
       - name: service
-        image: gcr.io/google-samples/microservices-demo/adservice:v0.10.7
+        image: us-central1-docker.pkg.dev/google-samples/microservices-demo/adservice:v0.10.5
         ports:
         - containerPort: 9555
         env:
         - name: PORT
           value: "9555"
+        startupProbe:
+          grpc:
+            port: 9555
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 30
         livenessProbe:
           grpc:
             port: 9555
-          periodSeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
         readinessProbe:
           grpc:
             port: 9555
-          periodSeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 3
         resources:
           requests:
             cpu: 200m
             memory: 180Mi
           limits:
-            cpu: 300m
-            memory: 300Mi
+            cpu: 500m
+            memory: 512Mi
 
 ---
 apiVersion: v1
@@ -359,7 +396,7 @@ spec:
     spec:
       containers:
       - name: service
-        image: gcr.io/google-samples/microservices-demo/cartservice:v0.10.7
+        image: us-central1-docker.pkg.dev/google-samples/microservices-demo/cartservice:v0.10.5
         ports:
         - containerPort: 7070
         env:
@@ -372,11 +409,15 @@ spec:
         livenessProbe:
           grpc:
             port: 7070
-          periodSeconds: 5
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 3
         readinessProbe:
           grpc:
             port: 7070
-          periodSeconds: 5
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 3
 
 ---
 apiVersion: v1
@@ -398,7 +439,7 @@ kind: Deployment
 metadata:
   name: redis-cart
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: redis-cart
@@ -467,7 +508,7 @@ spec:
     spec:
       containers:
       - name: service
-        image: gcr.io/google-samples/microservices-demo/checkoutservice:v0.10.7
+        image: us-central1-docker.pkg.dev/google-samples/microservices-demo/checkoutservice:v0.10.5
         ports:
         - containerPort: 5050
         env:
@@ -489,10 +530,13 @@ spec:
           grpc:
             port: 5050
           periodSeconds: 5
+          timeoutSeconds: 3
         readinessProbe:
           grpc:
             port: 5050
           periodSeconds: 5
+          timeoutSeconds: 3
+
 ---
 apiVersion: v1
 kind: Service
@@ -524,7 +568,7 @@ spec:
     spec:
       containers:
       - name: service
-        image: gcr.io/google-samples/microservices-demo/frontend:v0.10.7
+        image: us-central1-docker.pkg.dev/google-samples/microservices-demo/frontend:v0.10.5
         ports:
         - containerPort: 8080
         env:
@@ -544,16 +588,29 @@ spec:
           value: "checkoutservice:5050"
         - name: AD_SERVICE_ADDR
           value: "adservice:9555"
+        - name: SHOPPING_ASSISTANT_SERVICE_ADDR
+          value: "shoppingassistantservice:80"
         livenessProbe:
           httpGet:
             path: "/_healthz"
             port: 8080
+          initialDelaySeconds: 10
           periodSeconds: 5
+          timeoutSeconds: 3
         readinessProbe:
           httpGet:
             path: "/_healthz"
             port: 8080
+          initialDelaySeconds: 10
           periodSeconds: 5
+          timeoutSeconds: 3
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
 
 ---
 apiVersion: v1
@@ -568,4 +625,4 @@ spec:
   - protocol: TCP
     port: 80
     targetPort: 8080
-    nodePort: 30007
+    nodePort: 30008
